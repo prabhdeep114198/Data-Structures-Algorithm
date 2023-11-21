@@ -1,0 +1,64 @@
+import java.util.Stack;
+
+public class infix2postfix{
+    private static boolean isOperator(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
+    }
+    private static int getPrecedence(char operator) {
+        switch (operator) {
+            case '^':
+                return 3;
+            case '*':
+            case '/':
+                return 2;
+            case '+':
+            case '-':
+                return 1;
+            default:
+                return -1; 
+        }
+    }
+
+    public static String infixToPostfix(String infixExpression) {
+        StringBuilder postfix = new StringBuilder();
+        Stack<Character> operatorStack = new Stack<>();
+
+        for (char c : infixExpression.toCharArray()) {
+            if (Character.isLetterOrDigit(c)) {
+                postfix.append(c);
+            } else if (c == '(') {
+                operatorStack.push(c);
+            } else if (c == ')') {
+                while (!operatorStack.isEmpty() && operatorStack.peek() != '(') {
+                    postfix.append(operatorStack.pop());
+                }
+                if (!operatorStack.isEmpty() && operatorStack.peek() != '(') {
+                    return "Invalid infix expression";
+                } else {
+                    operatorStack.pop(); 
+                }
+            } else if (isOperator(c)) {
+                while (!operatorStack.isEmpty() && getPrecedence(c) <= getPrecedence(operatorStack.peek())) {
+                    postfix.append(operatorStack.pop());
+                }
+                operatorStack.push(c);
+            }
+        }
+
+        while (!operatorStack.isEmpty()) {
+            if (operatorStack.peek() == '(') {
+                return "Invalid infix expression";
+            }
+            postfix.append(operatorStack.pop());
+        }
+
+        return postfix.toString();
+    }
+
+    public static void main(String[] args) {
+        String infixExpression = "A+B*C-(D/E^F)";
+        String postfixExpression = infixToPostfix(infixExpression);
+        System.out.println("Infix Expression: " + infixExpression);
+        System.out.println("Postfix Expression: " + postfixExpression);
+    }
+}

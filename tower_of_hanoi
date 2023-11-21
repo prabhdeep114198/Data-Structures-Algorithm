@@ -1,0 +1,112 @@
+class towerOfHanoi{
+class Stack
+{
+	int size;
+	int top;
+	int array[];
+}
+Stack create(int size)
+{
+	Stack stk = new Stack();
+	stk.size = size;
+	stk.top = -1;
+	stk.array = new int[size];
+	return stk;
+}
+boolean isFull(Stack stk)
+{
+	return (stk.top == stk.size - 1);
+}
+boolean isEmpty(Stack stk)
+{
+	return (stk.top == -1);
+}
+void push(Stack stk, int num)
+{
+	if (isFull(stk))
+		return;
+		
+	stk.array[++stk.top] = num;
+}
+int pop(Stack stk)
+{
+	if (isEmpty(stk))
+		return Integer.MIN_VALUE;
+		
+	return stk.array[stk.top--];
+}
+void moveDisksBetweenTwoPoles(Stack src, Stack dest,String s, String d)
+{
+	int pole1TopDisk = pop(src);
+	int pole2TopDisk = pop(dest);
+
+	if (pole1TopDisk == Integer.MIN_VALUE)
+	{
+		push(src, pole2TopDisk);
+		moveDisk(d, s, pole2TopDisk);
+	}
+	
+	else if (pole2TopDisk == Integer.MIN_VALUE)
+	{
+		push(dest, pole1TopDisk);
+		moveDisk(s, d, pole1TopDisk);
+	}
+	else if (pole1TopDisk > pole2TopDisk)
+	{
+		push(src, pole1TopDisk);
+		push(src, pole2TopDisk);
+		moveDisk(d, s, pole2TopDisk);
+	}
+	else
+	{
+		push(dest, pole2TopDisk);
+		push(dest, pole1TopDisk);
+		moveDisk(s, d, pole1TopDisk);
+	}
+}
+void moveDisk(String fromPeg, String toPeg, int disk)
+{
+	System.out.println("Move the disk " + disk +" from " + fromPeg +" to " + toPeg);
+}
+
+void tohIterative(int num_of_disks, Stack src, Stack aux, Stack dest)
+{
+	int i, total_num_of_moves;
+	String s = "Source", d = "Destination", a = "Auxilary";
+
+	if (num_of_disks % 2 == 0)
+	{
+		String temp = d;
+		d = a;
+		a = temp;
+	}
+	total_num_of_moves = (int)(Math.pow(2, num_of_disks) - 1);
+
+	for(i = num_of_disks; i >= 1; i--)
+		push(src, i);
+
+	for(i = 1; i <= total_num_of_moves; i++)
+	{
+		if (i % 3 == 1)
+		moveDisksBetweenTwoPoles(src, dest, s, d);
+
+		else if (i % 3 == 2)
+		moveDisksBetweenTwoPoles(src, aux, s, a);
+
+		else if (i % 3 == 0)
+		moveDisksBetweenTwoPoles(aux, dest, a, d);
+	}
+}
+public static void main(String[] args)
+{
+	int num_of_disks = 3;
+	towerOfHanoi ob = new towerOfHanoi();
+	Stack source, destination, auxilary;
+
+	source = ob.create(num_of_disks);
+	destination = ob.create(num_of_disks);
+	auxilary = ob.create(num_of_disks);
+	
+	ob.tohIterative(num_of_disks, source, auxilary, destination);
+}
+}
